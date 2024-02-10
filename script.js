@@ -50,9 +50,6 @@ function navigateTo(page) {
     .then(data => {
       mainContent.innerHTML = data;
       window.location.hash = page;  // Use hash-based URLs
-      // Use HTML5 History API to update the URL
-      history.pushState({}, '', '/' + page);
-        
 
     })
     .catch(error => console.error('Error loading page', error));
