@@ -2,31 +2,54 @@ let sidebar = document.querySelector(".sidebar");
 let menuBtn = document.querySelector("#btn");
 let searchBtn = document.querySelector(".bx-search");
 
+// Check if the sidebar state is stored in localStorage and apply it
+if (localStorage.getItem("sidebarOpen") === "true") {
+  sidebar.classList.add("open");
+  menuBtnChange();
+}
+
 menuBtn.addEventListener("mouseover", () => {
-  sidebar.classList.toggle("open");
-  menuBtnChange(); // calling the function (optional)
+  toggleSidebar();
 });
 
-searchBtn.addEventListener("mouseover", () => { 
-  sidebar.classList.toggle("open");
-  menuBtnChange(); // calling the function (optional)
+searchBtn.addEventListener("mouseover", () => {
+  toggleSidebar();
 });
 
 menuBtn.addEventListener("mouseout", () => {
-  sidebar.classList.toggle("open");
-  menuBtnChange(); // calling the function (optional)
+  toggleSidebar();
 });
 
-searchBtn.addEventListener("mouseout", () => { 
-  sidebar.classList.toggle("open");
-  menuBtnChange(); // calling the function (optional)
+searchBtn.addEventListener("mouseout", () => {
+  toggleSidebar();
 });
 
-// Following are the code to change sidebar button (optional)
+function toggleSidebar() {
+  sidebar.classList.toggle("open");
+  menuBtnChange();
+  
+  // Store the current sidebar state in localStorage
+  localStorage.setItem("sidebarOpen", sidebar.classList.contains("open"));
+}
+
 function menuBtnChange() {
   if (sidebar.classList.contains("open")) {
-    menuBtn.classList.replace("bx-menu", "bx-menu-alt-right"); // replacing the icons class
+    menuBtn.classList.replace("bx-menu", "bx-menu-alt-right");
   } else {
-    menuBtn.classList.replace("bx-menu-alt-right", "bx-menu"); // replacing the icons class
+    menuBtn.classList.replace("bx-menu-alt-right", "bx-menu");
   }
 }
+
+function navigateTo(page) {
+  page = page || '/pages/home';
+
+  fetch(page + '.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('main-content').innerHTML = data;
+      history.pushState({}, null, page);
+    })
+    .catch(error => console.error('Error loading page', error));
+}
+
+navigateTo();
