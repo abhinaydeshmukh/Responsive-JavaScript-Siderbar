@@ -1,6 +1,6 @@
 let sidebar = document.querySelector(".sidebar");
 let menuBtn = document.querySelector("#btn");
-let searchBtn = document.querySelector(".bx-search");
+let mainContent = document.getElementById('main-content');
 
 // Check if the sidebar state is stored in localStorage and apply it
 if (localStorage.getItem("sidebarOpen") === "true") {
@@ -8,22 +8,24 @@ if (localStorage.getItem("sidebarOpen") === "true") {
   menuBtnChange();
 }
 
+// Event listener for hover on the sidebar
+sidebar.addEventListener("mouseover", () => {
+  if (!sidebar.classList.contains("open")) {
+    sidebar.classList.add("hover");
+  }
+});
+
+// Event listener for mouseout on the sidebar
+sidebar.addEventListener("mouseout", () => {
+  sidebar.classList.remove("hover");
+});
+
 menuBtn.addEventListener("mouseover", () => {
   toggleSidebar();
 });
 
-searchBtn.addEventListener("mouseover", () => {
-  toggleSidebar();
-});
 
-menuBtn.addEventListener("mouseout", () => {
-  toggleSidebar();
-});
-
-searchBtn.addEventListener("mouseout", () => {
-  toggleSidebar();
-});
-
+// Function to toggle sidebar
 function toggleSidebar() {
   sidebar.classList.toggle("open");
   menuBtnChange();
@@ -32,6 +34,7 @@ function toggleSidebar() {
   localStorage.setItem("sidebarOpen", sidebar.classList.contains("open"));
 }
 
+// Function to update menu button based on sidebar state
 function menuBtnChange() {
   if (sidebar.classList.contains("open")) {
     menuBtn.classList.replace("bx-menu", "bx-menu-alt-right");
@@ -40,25 +43,50 @@ function menuBtnChange() {
   }
 }
 
+// Function to navigate to a page
 function navigateTo(page) {
-  page = page || '/pages/home';
-
-  fetch(page + '.html')
+  fetch('pages/' + page + '.html')
     .then(response => response.text())
     .then(data => {
-      document.getElementById('main-content').innerHTML = data;
+      mainContent.innerHTML = data;
+      window.location.hash = page;  // Use hash-based URLs
+
     })
     .catch(error => console.error('Error loading page', error));
 }
 
-// Load the page based on the current hash or default to home
-function loadCurrentPage() {
-  const currentPage = window.location.hash || '/pages/home';
-  navigateTo(currentPage);
+// Function to get the current page based on the URL
+function getCurrentPage() {
+  const path = window.location.pathname;
+  return path === '/' ? 'home' : path.replace('.html', '');
 }
 
-// Refresh the current page content on hashchange
-window.addEventListener('hashchange', loadCurrentPage);
+// Function to highlight the current page in the navigation (optional)
+function highlightCurrentPage() {
+  const currentPage = getCurrentPage();
+  // Update this part based on your navigation structure
+  const navLinks = document.querySelectorAll('.nav-link');
 
-// Initial load
-loadCurrentPage();
+  navLinks.forEach(link => {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('current-page');
+    } else {
+      link.classList.remove('current-page');
+    }
+  });
+}
+
+// Event listener for anchor tags with class "nav-link"
+document.addEventListener("click", (event) => {
+  if (event.target.classList.contains("nav-link")) {
+    event.preventDefault();
+    const page = event.target.getAttribute("href");
+    navigateTo(page);
+  }
+});
+
+// Load the home page by default or based on the hash
+document.addEventListener("DOMContentLoaded", function () {
+  const hash = window.location.hash.substring(1); // Remove the '#' symbol
+  navigateTo(hash || 'home');
+});
