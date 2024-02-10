@@ -47,12 +47,18 @@ function navigateTo(page) {
     .then(response => response.text())
     .then(data => {
       document.getElementById('main-content').innerHTML = data;
-
-      // Update the URL without triggering a full page reload
-      window.location.hash = page;
     })
     .catch(error => console.error('Error loading page', error));
 }
 
 // Load the page based on the current hash or default to home
-navigateTo(window.location.hash || '/pages/home');
+function loadCurrentPage() {
+  const currentPage = window.location.hash || '/pages/home';
+  navigateTo(currentPage);
+}
+
+// Refresh the current page content on hashchange
+window.addEventListener('hashchange', loadCurrentPage);
+
+// Initial load
+loadCurrentPage();
