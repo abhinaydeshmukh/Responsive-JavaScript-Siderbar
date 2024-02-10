@@ -47,7 +47,8 @@ function navigateTo(page) {
     .then(response => response.text())
     .then(data => {
       document.getElementById('main-content').innerHTML = data;
-      history.pushState({}, null, page);
+         // Update the URL with a hash without triggering a full page reload
+         window.location.hash = page;
     })
     .catch(error => console.error('Error loading page', error));
 }
